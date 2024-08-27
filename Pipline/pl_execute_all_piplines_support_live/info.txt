@@ -1,0 +1,6 @@
+selected resource name:		pl_execute_all_piplines
+selected resource type:		pipeline
+workspace name:			prroject-analytic-nyc-taxi
+workspace location:		southeastasia
+subscription id:		33b0e83b-d34b-4715-a610-ce4ddc65251a
+time of download (UTC):		Sun, 11 Aug 2024 07:21:38 GMT

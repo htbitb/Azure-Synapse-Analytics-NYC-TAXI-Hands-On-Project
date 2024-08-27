@@ -1,0 +1,175 @@
+{
+    "name": "pl_create_gold_trip_data",
+    "properties": {
+        "activities": [
+            {
+                "name": "Get year and month",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "Ls_serverless_sql_pool",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "USE nyc_taxi_ldw;\n\nSELECT DISTINCT\n    year,\n    month\nFROM bronze.vw_trip_data_green_csv;"
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                }
+            },
+            {
+                "name": "Execute for each folder",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "Get year and month",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('Get year and month').output.resultSets[0].Rows",
+                        "type": "Expression"
+                    },
+                    "batchCount": 5,
+                    "activities": [
+                        {
+                            "name": "Delete folder if exists",
+                            "type": "Delete",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "0.12:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "dataset": {
+                                    "referenceName": "ds_silver_layer_taxi_zone",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "folder_path": {
+                                            "value": "gold/trip_data_green/year=@{item().year}/month=@{item().month}",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "logStorageSettings": {
+                                    "linkedServiceName": {
+                                        "referenceName": "prroject-analytic-nyc-taxi-WorkspaceDefaultStorage",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                "enableLogging": true,
+                                "storeSettings": {
+                                    "type": "AzureBlobFSReadSettings",
+                                    "recursive": true,
+                                    "enablePartitionDiscovery": false
+                                }
+                            }
+                        },
+                        {
+                            "name": "create folder for partition",
+                            "type": "SqlServerStoredProcedure",
+                            "dependsOn": [
+                                {
+                                    "activity": "Delete folder if exists",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "policy": {
+                                "timeout": "0.12:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "storedProcedureName": "[gold].[usp_gold_trip_data_green]",
+                                "storedProcedureParameters": {
+                                    "month": {
+                                        "value": {
+                                            "value": "@item().month",
+                                            "type": "Expression"
+                                        },
+                                        "type": "String"
+                                    },
+                                    "year": {
+                                        "value": {
+                                            "value": "@item().year",
+                                            "type": "Expression"
+                                        },
+                                        "type": "String"
+                                    }
+                                }
+                            },
+                            "linkedServiceName": {
+                                "referenceName": "Ls_serverless_sql_pool",
+                                "type": "LinkedServiceReference"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "create gold trip data view",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "Execute for each folder",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "Ls_serverless_sql_pool",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "NonQuery",
+                            "text": "USE nyc_taxi_ldw;\nDROP VIEW IF EXISTS gold.vw_trip_data_green;"
+                        },
+                        {
+                            "type": "NonQuery",
+                            "text": "CREATE VIEW gold.vw_trip_data_green\nAS\nSELECT\n    result.filepath(1) as year,\n    result.filepath(2) as month,\n    result.*\nFROM\n    OPENROWSET\n    (\n        BULK 'gold/trip_data_green/year=*/month=*/*.parquet',\n        DATA_SOURCE = 'nyc_taxi_src',\n        FORMAT = 'PARQUET'\n    )\n    WITH\n    (\n        borough         VARCHAR(15),\n        trip_date       DATE,\n        trip_day        VARCHAR(10),\n        trip_day_weekend_ind CHAR(1),\n        card_trip_count INT,\n        cash_trip_count INT,\n        street_hail_trip_count INT,\n        dispatch_trip_count    INT,\n        trip_distance          FLOAT,\n        trip_duration          INT,\n        fare_amount            FLOAT\n    ) AS [result];"
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                }
+            }
+        ],
+        "annotations": [],
+        "lastPublishTime": "2024-08-10T14:29:41Z"
+    },
+    "type": "Microsoft.Synapse/workspaces/pipelines"
+}

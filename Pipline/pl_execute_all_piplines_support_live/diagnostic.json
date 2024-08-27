@@ -1,0 +1,23 @@
+{
+    "now": "2024-08-11T07:21:38.878Z",
+    "perfNow": 18663648.700000048,
+    "diagnosticCorrelation": "00670912-1584-40bf-b68b-9b6f6954ee85",
+    "source": "DownloadSupportFiles",
+    "environment": {
+        "productName": "a365",
+        "buildVersion": "24.0722.02",
+        "environmentType": 9,
+        "resourceName": "prroject-analytic-nyc-taxi",
+        "resourceRegion": "southeastasia",
+        "resourceGroup": "ASA-NYC-TAXI",
+        "subscriptionId": "33b0e83b-d34b-4715-a610-ce4ddc65251a",
+        "sessionId": "bIrwat3enRlm3mtZx1DOuk",
+        "operationId": "6n[Gb",
+        "gitType": "live",
+        "loggingKey": "3cee7c42-10a6-4cd8-8401-29fcc5470ace"
+    },
+    "additionalInfo": {
+        "selectedResource": "pl_execute_all_piplines",
+        "selectedResourceType": "pipeline"
+    }
+}

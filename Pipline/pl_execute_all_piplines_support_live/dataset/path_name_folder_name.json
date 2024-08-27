@@ -1,0 +1,21 @@
+{
+    "name": "path_name_folder_name",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "prroject-analytic-nyc-taxi-WorkspaceDefaultStorage",
+            "type": "LinkedServiceReference"
+        },
+        "annotations": [],
+        "type": "Json",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileName": "path_name.json",
+                "folderPath": "raw",
+                "fileSystem": "nyc-taxi-data"
+            }
+        },
+        "schema": {}
+    },
+    "type": "Microsoft.Synapse/workspaces/datasets"
+}
