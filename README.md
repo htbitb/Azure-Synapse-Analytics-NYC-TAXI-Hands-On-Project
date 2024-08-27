@@ -12,6 +12,8 @@
       - [2. Data Ingestion](#2-data-ingestion)
       - [3. Data Transformation](#3-data-transformation)
       - [4. Reporting Requirements](#4-reporting-requirements)
+  - [Azure Synapse Analytics Overview](/knowledge/ASA.md)
+  - [NYC Taxi Power BI Report](/knowledge/report.md)
 ### Introduction
 * Learn how to build a real world project using `Azure Synapse Analytics` to process data from NYC Taxi Trips data
 * Learn how to create SQL scripts and Spark notebooks in Azure Synapse Analytics
