@@ -1,3 +1,17 @@
+<div align="center">
+
+## Azure Synapse Analytics With New York Taxi Real Data 
+
+</div>
+
+**Table of Content**
+- [Azure Synapse Analytics With New York Taxi Real Data](#azure-synapse-analytics-with-new-york-taxi-real-data)
+  - [Introduction](#introduction)
+  - [Project Overview](#project-overview)
+      - [1. Data Discovery](#1-data-discovery)
+      - [2. Data Ingestion](#2-data-ingestion)
+      - [3. Data Transformation](#3-data-transformation)
+      - [4. Reporting Requirements](#4-reporting-requirements)
 ### Introduction
 * Learn how to build a real world project using `Azure Synapse Analytics` to process data from NYC Taxi Trips data
 * Learn how to create SQL scripts and Spark notebooks in Azure Synapse Analytics
